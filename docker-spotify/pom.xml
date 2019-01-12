@@ -73,8 +73,9 @@
 				</executions>
 				<configuration>
 					<pushImage>false</pushImage>
+					<imageName>docker-image-with-spotify-plugin</imageName>
+					<baseImage>java</baseImage>
 					<dockerDirectory>${project.basedir}</dockerDirectory>
-					<imageName>docker-image/${project.artifactId}</imageName>
 					<resources>        <!-- Dockerfile building resources -->
 						<resource>
 							<targetPath>/</targetPath>
