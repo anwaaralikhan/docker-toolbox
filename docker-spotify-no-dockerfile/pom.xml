@@ -10,17 +10,13 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.dc.spring.docker</groupId>
-	<artifactId>docker-spotify-without-dockerfile</artifactId>
+	<artifactId>docker-spotify-no-dockerfile</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>docker-spotify-without-dockerfile</name>
-	<description>Docker using Spotify Plugin</description>
+	<name>docker-spotify-no-dockerfile</name>
+	<description>Docker with maven plugin but no dockerfile</description>
 
 	<properties>
 		<java.version>1.8</java.version>
-		<!--set this to your docker acct name-->
-        <docker.image.prefix>digital-alchemist</docker.image.prefix>
-        <!--Set to name of project-->
-        <docker.image.name>docker-image-without-dockerfile</docker.image.name>
 	</properties>
 
 	<dependencies>
@@ -46,15 +42,6 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>${project.basedir}</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/Dockerfile</include>
-				</includes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -62,32 +49,19 @@
 			</plugin>
 			<plugin>
 				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>1.4.9</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<phase>package</phase>
-						<goals>
-							<goal>build</goal>
-						</goals>
-					</execution>
-				</executions>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.5</version>
 				<configuration>
-					<pushImage>false</pushImage>
-					<imageName>docker-image-with-spotify-plugin-without-dockerfile</imageName>
-					<baseImage>java:8</baseImage>  <!-- Base image based on Java8 -->
-					<entryPoint>["java","-jar", "/${project.build.finalName}.jar" ]</entryPoint>
-					<dockerDirectory>${project.basedir}</dockerDirectory>
-					<resources>        <!-- Dockerfile building resources -->
+					<imageName>docker-spotify-no-dockerfile</imageName>
+					<baseImage>java</baseImage>
+					<entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+					<resources>
 						<resource>
 							<targetPath>/</targetPath>
-							<directory>${project.build.directory}}</directory>
+							<directory>${project.build.directory}</directory>
 							<include>${project.build.finalName}.jar</include>
 						</resource>
 					</resources>
-					<!-- <repository>docker.io/kkapelon/docker-maven-comparison</repository> 
-						<tag>${project.version}</tag> -->
 				</configuration>
 			</plugin>
 		</plugins>
