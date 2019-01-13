@@ -50,7 +50,6 @@
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.5</version>
 				<configuration>
 					<imageName>docker-spotify-no-dockerfile</imageName>
 					<baseImage>java</baseImage>
