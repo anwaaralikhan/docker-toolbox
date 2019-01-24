@@ -52,7 +52,7 @@
 				<artifactId>docker-maven-plugin</artifactId>
 				<configuration>
 					<imageName>docker-spotify-no-dockerfile</imageName>
-					<baseImage>java</baseImage>
+					<baseImage>java:8</baseImage>
 					<entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
 					<resources>
 						<resource>
