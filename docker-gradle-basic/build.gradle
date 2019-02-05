@@ -96,6 +96,7 @@ task jar {
 task bootJar {
     baseName = 'docker-gradle-basic'
     version = project.version
+    enabled=true
 }
 
 
