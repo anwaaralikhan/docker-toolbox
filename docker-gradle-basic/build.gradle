@@ -31,6 +31,11 @@ apply plugin: 'com.palantir.docker'
 group = 'com.dc.spring.docker.gradle'
 version = '0.0.1-SNAPSHOT'
 
+mainClassName = 'com.dc.spring.docker.gradle.DockerGradleBasicApplication'
+applicationName = 'docker-gradle-basic'
+applicationDefaultJvmArgs = ["-Xms512m", "-Xmx1024m"]
+
+
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
@@ -73,7 +78,7 @@ task dockerRun {
     env 'java': '-jar', 'docker-gradle-basic-0.0.1-SNAPSHOT.jar'
 }
 
-task jar {
+jar {
 
 	from sourceSets.main.java.srcDirs
 	//include sourceSets.main.java.allSource
@@ -82,7 +87,7 @@ task jar {
     //include '**/xxx/**/*'  
     //exclude '**/xxx/xxx.class'
 
-    mainClassName = "com.dc.spring.docker.gradle.DockerGradleBasicApplication"
+    mainClassName = 'com.dc.spring.docker.gradle.DockerGradleBasicApplication'
     baseName = 'docker-gradle-basic'
     version = project.version
     enabled=true
@@ -93,8 +98,16 @@ task jar {
     }
 }
 
-task bootJar {
+processResources{
+    exclude '*.properties'
+}
+
+bootJar {
     baseName = 'docker-gradle-basic'
+    manifest {
+        attributes("Implementation-Title": "docker-gradle-basic",
+            "Implementation-Version": version)
+    }
     version = project.version
     enabled=true
 }
@@ -122,12 +135,12 @@ publishing {
 }
 
 
-task jacoco {
+jacoco {
     toolVersion = "0.8.1"
     reportsDir = file("$buildDir/reports/Jacoco")
 }
 
-task findbugs {
+findbugs {
     ignoreFailures = true
     effort = "max"
     reportLevel = "low"
@@ -140,7 +153,7 @@ tasks.withType(FindBugs) {
     }
 }
 
-task javadoc {
+javadoc {
     source = sourceSets.main.allJava
     classpath = configurations.compile
 }
