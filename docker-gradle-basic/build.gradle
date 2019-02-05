@@ -7,6 +7,8 @@ buildscript {
 	      url "https://plugins.gradle.org/m2/"
 	    }
 		mavenCentral()
+        jcenter()
+        mavenLocal()
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -18,6 +20,10 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
+apply plugin: 'findbugs'
+apply plugin: 'jacoco'
+apply plugin: 'maven-publish'  
+apply plugin: 'java-library-distribution'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.palantir.docker'
@@ -29,16 +35,30 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 repositories {
-    maven {
-        mavenCentral()
-        url 'https://repo.spring.io/libs-milestone'
-    }
+	mavenCentral()
+	maven {
+		url 'http://host:port/repository/projectname'	
+        credentials {
+            username 'userId'
+            password 'userpass'
+       	} 		
+	}
+	jcenter()
+	mavenLocal()
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+	
+	/*
+	exlude example
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa') {
+	    exclude(module: 'hibernate-core')
+	    exclude(module: 'hibernate-entitymanager')
+	}*/
+	
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -54,12 +74,72 @@ task dockerRun {
 }
 
 task jar {
+
+	from sourceSets.main.java.srcDirs
+	//include sourceSets.main.java.allSource
+    dependsOn classes 
+    //from sourceSets.main.output.classesDir    
+    //include '**/xxx/**/*'  
+    //exclude '**/xxx/xxx.class'
+
     mainClassName = "com.dc.spring.docker.gradle.DockerGradleBasicApplication"
     baseName = 'docker-gradle-basic'
     version = project.version
+    enabled=true
+    includeEmptyDirs = false
+    manifest {
+        attributes("Implementation-Title": "docker-gradle-basic",
+                   "Implementation-Version": version)
+    }
 }
 
 task bootJar {
     baseName = 'docker-gradle-basic'
     version = project.version
+}
+
+
+publishing {
+    repositories {
+        maven {
+			url 'http://host:port/repository/projectname'	
+	        credentials {
+	            username 'userId'
+	            password 'userpass'
+	       	} 
+        }
+        mavenLocal()
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.dc.docker.gradle'
+            artifactId = 'docker-gradle-basic'
+            artifact jar
+        }
+    }
+}
+
+
+task jacoco {
+    toolVersion = "0.8.1"
+    reportsDir = file("$buildDir/reports/Jacoco")
+}
+
+task findbugs {
+    ignoreFailures = true
+    effort = "max"
+    reportLevel = "low"
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+task javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compile
 }
